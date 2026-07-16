@@ -68,7 +68,7 @@ This is where we map telemetry "data → visual." using Python tools like matplo
 *(To be updated as implementation progresses)*
 
 ```bash
-git clone https://github.com/your-username/FabricSim.git
+git clone https://github.com/swiftkimani/FabricSim.git
 cd FabricSim
 ```
 
