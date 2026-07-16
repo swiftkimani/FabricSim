@@ -1,9 +1,10 @@
 #include <iostream>
-#include <string>
+// std::string not needed here
 #include <cstring>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fabricsim/raii_socket.hpp>
 
 const int PORT = 8080;
 const int BUFFER_SIZE = 1024;
@@ -11,11 +12,15 @@ const int BUFFER_SIZE = 1024;
 int main() {
     // 1. Create a UDP socket
     // AF_INET = IPv4, SOCK_DGRAM = UDP
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
+    int raw_sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (raw_sock < 0) {
         std::cerr << "Failed to create socket!" << std::endl;
         return 1;
     }
+    
+    // RAII wrapper: The socket will automatically close when `managed_sock` goes out of scope!
+    fabricsim::ManagedSocket managed_sock(raw_sock);
+    int sock = managed_sock.get();
 
     // 2. Configure the address we want to listen on
     struct sockaddr_in server_addr;
@@ -27,7 +32,7 @@ int main() {
     // 3. Bind the socket to the port
     if (bind(sock, (const struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         std::cerr << "Bind failed! Is port " << PORT << " already in use?" << std::endl;
-        close(sock);
+        // No need to call close(sock) here! RAII takes care of it.
         return 1;
     }
 
@@ -52,6 +57,6 @@ int main() {
     }
 
     // 5. Clean up (we'll never actually reach this in an infinite loop, but good practice)
-    close(sock);
+    // No need to manually close(sock)! When main() exits, `managed_sock` is destroyed and closes the socket.
     return 0;
 }
