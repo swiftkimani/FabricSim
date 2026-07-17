@@ -111,6 +111,25 @@ And in a second terminal (with the venv activated), launch the visualizer:
 python scripts/visualize_heatmap.py
 ```
 
+## 🚀 Real-World Applications & Future Roadmap
+
+FabricSim represents the core logic required to run the massive backend network architectures powering modern AI supercomputers (like the clusters OpenAI uses to train ChatGPT). While this simulator demonstrates the fundamental advantages of **Adaptive Routing** over static ECMP, there are several exciting paths for future integration and expansion to bring it closer to a production-grade or academic research simulator:
+
+### 1. Lossless Networking (PFC) & RoCEv2 Simulation
+Currently, FabricSim drops packets when a switch queue hits 100% capacity. In real AI networks (like RoCEv2 or Infiniband), switches implement **Priority Flow Control (PFC)** by sending "Pause" frames backward to explicitly tell the sender to stop transmitting, ensuring zero packet loss. Implementing PFC mechanics would allow us to simulate lossless Ethernet behavior.
+
+### 2. Machine Learning Routing (Reinforcement Learning)
+Instead of relying on a hard-coded heuristic (e.g., "if queue > 80%, pick a random different path"), the routing logic could be handed over to a Reinforcement Learning (RL) agent. The telemetry stream serves as the observation state, and the RL agent learns to optimally route packets over time to minimize job completion time.
+
+### 3. Enterprise Telemetry (Prometheus & Grafana)
+Instead of dumping our telemetry to a raw CSV file and polling it via Python, we can integrate the C++ simulator to expose a `/metrics` HTTP endpoint. This would allow **Prometheus** to scrape the queue depths in real-time, enabling beautiful, enterprise-grade dashboards using **Grafana**.
+
+### 4. Realistic Workloads (PyTorch / MPI Traces)
+Rather than relying solely on the synthetic "All-to-All" patterns in `TrafficGenerator`, we could integrate a trace parser. This parser would read actual execution logs (MPI traces) from a real PyTorch Distributed Data Parallel (DDP) training job, allowing us to simulate the *exact* network traffic footprint of a real AI model.
+
+### 5. Integration with ns-3
+To achieve highly accurate, packet-level physical simulation (including physical wire propagation delay in nanoseconds, serialization delay based on exact link speeds like 400 Gbps, and MAC/TCP headers), the routing logic of FabricSim can be ported as a custom routing plugin inside the established [ns-3](https://www.nsnam.org/) network simulator.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
