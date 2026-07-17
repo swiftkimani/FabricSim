@@ -8,3 +8,5 @@ compile_commands.json
 *.dylib
 *.so
 *.a
+scripts/venv/
+telemetry.csv

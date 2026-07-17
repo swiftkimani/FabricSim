@@ -7,7 +7,7 @@ EXAMPLES_DIR = examples
 SRC_DIR = src
 
 # Targets
-all: $(BIN_DIR)/udp_sender $(BIN_DIR)/udp_receiver $(BIN_DIR)/test_topology $(BIN_DIR)/test_traffic $(BIN_DIR)/test_routing $(BIN_DIR)/test_simulator $(BIN_DIR)/test_adaptive_routing $(BIN_DIR)/visualize_adaptive
+all: $(BIN_DIR)/udp_sender $(BIN_DIR)/udp_receiver $(BIN_DIR)/test_topology $(BIN_DIR)/test_traffic $(BIN_DIR)/test_routing $(BIN_DIR)/test_simulator $(BIN_DIR)/test_adaptive_routing $(BIN_DIR)/visualize_adaptive $(BIN_DIR)/test_telemetry_stream
 
 # Ensure bin directory exists
 $(BIN_DIR):
@@ -36,6 +36,9 @@ $(BIN_DIR)/test_adaptive_routing: $(EXAMPLES_DIR)/test_adaptive_routing.cpp $(SR
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(BIN_DIR)/visualize_adaptive: $(EXAMPLES_DIR)/visualize_adaptive.cpp $(SRC_DIR)/topology.cpp $(SRC_DIR)/traffic_generator.cpp $(SRC_DIR)/routing_engine.cpp $(SRC_DIR)/simulator.cpp | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+$(BIN_DIR)/test_telemetry_stream: $(EXAMPLES_DIR)/test_telemetry_stream.cpp $(SRC_DIR)/topology.cpp $(SRC_DIR)/traffic_generator.cpp $(SRC_DIR)/routing_engine.cpp $(SRC_DIR)/simulator.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:

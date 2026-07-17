@@ -3,6 +3,8 @@
 #include <vector>
 #include <queue>
 #include <unordered_map>
+#include <fstream>
+#include <string>
 #include <fabricsim/topology.hpp>
 #include <fabricsim/routing_engine.hpp>
 #include <fabricsim/packet.hpp>
@@ -13,7 +15,10 @@ namespace fabricsim {
 class Simulator {
 public:
     // Initialize the simulator with a topology, routing engine, and buffer size for nodes
-    Simulator(const Topology& topo, RoutingEngine& router, size_t max_buffer_size, bool use_adaptive_routing = false, bool enable_path_logging = false);
+    Simulator(const Topology& topo, RoutingEngine& router, size_t max_buffer_size, bool use_adaptive_routing = false, bool enable_path_logging = false, bool enable_telemetry_stream = false);
+
+    // Destructor to close the telemetry file if open
+    ~Simulator();
 
     // Inject a list of flows into the network (converts them to packets at the source host)
     void inject_traffic(const std::vector<Flow>& flows);
@@ -36,6 +41,8 @@ private:
     size_t max_buffer_size_;
     bool use_adaptive_routing_;
     bool enable_path_logging_;
+    bool enable_telemetry_stream_;
+    std::ofstream telemetry_file_;
 
     int dropped_packets_ = 0;
     int delivered_packets_ = 0;

@@ -4,12 +4,28 @@
 
 namespace fabricsim {
 
-Simulator::Simulator(const Topology& topo, RoutingEngine& router, size_t max_buffer_size, bool use_adaptive_routing, bool enable_path_logging)
-    : topo_(topo), router_(router), max_buffer_size_(max_buffer_size), use_adaptive_routing_(use_adaptive_routing), enable_path_logging_(enable_path_logging) {
+Simulator::Simulator(const Topology& topo, RoutingEngine& router, size_t max_buffer_size, bool use_adaptive_routing, bool enable_path_logging, bool enable_telemetry_stream)
+    : topo_(topo), router_(router), max_buffer_size_(max_buffer_size), use_adaptive_routing_(use_adaptive_routing), enable_path_logging_(enable_path_logging), enable_telemetry_stream_(enable_telemetry_stream) {
     // Initialize empty queues for all nodes
     int num_nodes = topo_.get_num_nodes();
     for (int i = 1; i <= num_nodes; ++i) {
         buffers_[i] = std::queue<Packet>();
+    }
+
+    if (enable_telemetry_stream_) {
+        telemetry_file_.open("telemetry.csv");
+        if (telemetry_file_.is_open()) {
+            // Write CSV header
+            telemetry_file_ << "tick,node_id,queue_depth\n";
+        } else {
+            std::cerr << "Warning: Could not open telemetry.csv for writing.\n";
+        }
+    }
+}
+
+Simulator::~Simulator() {
+    if (telemetry_file_.is_open()) {
+        telemetry_file_.close();
     }
 }
 
@@ -126,6 +142,13 @@ void Simulator::run(int max_ticks) {
         
         if (use_adaptive_routing_) {
             router_.decay_penalties(); // Decay penalties at the end of the tick
+        }
+
+        // Stream telemetry for this tick
+        if (enable_telemetry_stream_ && telemetry_file_.is_open()) {
+            for (int node_id = 1; node_id <= num_nodes; ++node_id) {
+                telemetry_file_ << tick << "," << node_id << "," << buffers_[node_id].size() << "\n";
+            }
         }
     }
 }
