@@ -21,7 +21,9 @@ def animate(i):
         # Pivot to create a heatmap grid: rows=node_id, cols=tick, values=queue_depth
         heatmap_data = df.pivot(index='node_id', columns='tick', values='queue_depth')
         
-        ax.clear()
+        # Clear the entire figure to prevent colorbar stacking
+        fig.clf()
+        ax = fig.add_subplot(111)
         
         # Draw the heatmap
         sns.heatmap(heatmap_data, ax=ax, cmap="YlOrRd", cbar_kws={'label': 'Queue Depth (Packets)'})
@@ -36,7 +38,7 @@ def animate(i):
         print(f"Error drawing heatmap: {e}")
 
 # Run animation
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+ani = animation.FuncAnimation(fig, animate, interval=1000, cache_frame_data=False)
 
 plt.tight_layout()
 plt.show()
