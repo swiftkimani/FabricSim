@@ -63,13 +63,52 @@ This is where your sockets (Module 2) + topology (Module 3) + traffic (Module 4)
 This is where we map telemetry "data → visual." using Python tools like matplotlib or Plotly.
 *   **Do**: read telemetry stream, render as a live heatmap.
 
-## 📦 Installation
+## 📦 Installation & Usage
 
-*(To be updated as implementation progresses)*
+### Prerequisites
+- A C++17 compliant compiler (`g++` or `clang++`)
+- `make`
+- Python 3.9+ (for visualization)
 
+### 1. Build the Simulator
 ```bash
 git clone https://github.com/swiftkimani/FabricSim.git
 cd FabricSim
+make
+```
+
+### 2. Run the Demos
+The project compiles several executable examples in the `bin/` directory:
+
+- **Topology Test**: Verifies the Fat-Tree graph generation.
+  ```bash
+  ./bin/test_topology
+  ```
+- **Adaptive Routing Benchmark**: Compares latency between ECMP and Adaptive routing under heavy load.
+  ```bash
+  ./bin/test_adaptive_routing
+  ```
+- **Visualization Demo**: Prints an interactive packet path trace showing dynamic re-routing in action.
+  ```bash
+  ./bin/visualize_adaptive
+  ```
+
+### 3. Run the Live Telemetry Heatmap (Python)
+To view a live heatmap of network congestion, first set up the Python environment:
+```bash
+python3 -m venv scripts/venv
+source scripts/venv/bin/activate
+pip install matplotlib pandas seaborn
+```
+
+Then, run the telemetry data generator in one terminal:
+```bash
+./bin/test_telemetry_stream
+```
+
+And in a second terminal (with the venv activated), launch the visualizer:
+```bash
+python scripts/visualize_heatmap.py
 ```
 
 ## 📄 License
